@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "tali-multi-modal",
+  "private_key_id": "1771f28cf3ff2c7a69f0ab0c5ed0069d8d300546",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCoprc78Yti3xJa\nh4DczWxBUPFeIs6rRmysaYFWLL5Dyld3FjJAGRu/Y3K4vAqyadsiOJTrpoWnhgxD\nk7G+yos6+WkrmFNqWVi5nyKbvRN94sLU18KFumRYTWPcltq35b8s/SBk34xQIa6f\nF9bT0zA3KbapwvimsTZcsYWX9gLvt+Y3sY2WvLoiSqOteBuYsmZ+i6UZNb+hFH6K\n4BvlJApyN0kbArf5M0dgcX870EFK+aWaWU0kngwy2FOghqG4EPYzY+58Vj4uI0Oz\n37ycXE+xw5oqgatpAgT56czRvAUxzw6QTHWWHb8ZP4WOWwcsv+9yAI3Ykp0tekF1\niHIC0u+XAgMBAAECggEAAawJ58JrZ1AEtNLD5+MFMLyV2TP/zmOQr3BQCuBEF4ZC\ngp683QW/Jfl0/ESL9GFi4UR0yMVO8dbLTqDyfHA7oMUzIrpJ2Ij/yVZxCW7m7tQE\nErK5pt8EFv9u51El7eVUgl1qThlFkuL9RFHaS98aity5HrMmoOaquX3xgwM/MQVI\nmdrdMAehiq8bFq+LNZWyffRsY/Y/MxBD3aDq71PVtQ+0nnRZ4iaDFhAen0AOMyJD\nh5VcQeIhEVeRS6wgRlf/q//R+7Z58gXFG9qu0ASzHBARIucieE+/l4p/l9gFFRG9\nBtg1Vl/9vDIdZQ4Ti339xf0eHgeqKH/6RndpAO2LQQKBgQDY8mTBvh0xPI4N2uJQ\nb8xtGS9GVz6sPgVZdMIHzsfx/Fuo0e6mQX69Z8ytg2RICEVBWOscTDrbT69/8UIc\n9322TjpEbzf2GOWKJbIEvOcPdGwfBd1emkNDDGxTQ1I/FDpY9kIRmnWQ9PRWtCA/\nXfovoC91Qv9BmjilDwwenCTT9wKBgQDHArSQGga2qtkWO6qKwVdquo6m5e7iTlvX\nxbWbKb34RBg5aq7ADIIZ0Y5w/EnH4I+l/2IkPkgy+mdH0jJuCTZNbGOl4vfzKT4+\nAEJLPuWX9mU1EPOcR2J3qwdLQAcVUaF75C5c5QaJgY50zSicFTRcDpvzjFY2jAmp\n2t6n71CZYQKBgBLr8UXEox8sPOeQc7S4S4gobisgaOL09dp7iIDN1DqS3Bu5U6tE\ngx1Z9Ewd7Z0qu3+blcX+EBQYuyHZlP6Zx2kjIYneeW8JdNu7te8b2rtKWDPMeyZJ\nJhyu9LO+Z2oBBaXEtLZ8VkyyUK1PQJDGTY/h1MHRehnqrY4X5eK1k7C5AoGBALcM\n1PrLBavVgDKEFTzl07t296mqS01bl/zjfUTIY1VNhR6i8zPxDWYkK6nfVRoFgvvD\n6Qi/RPem/YLBY+N0k78pWIsINtsx729mG5RMuTBK0hK6kekIfBjodqAPt7QzTp6/\nZqnJe3bVdSwYXSccFfoq8eVWCyLHMkhK6ox7gp5hAoGBAIgqG/E436/Dm3vciFDc\nPwqVrGqBWc74Hb+kOijCusAhmk9R9/P6tjw1kl9W/98a6vDx5p/9C9g07BzJGs2E\n/XD+h/bpnJODDjSwHm5Bo46KVxZj1AwucdGWddSChpOCPNCZENIM/Z4sPRBd0p2s\nmtYB5svdt9oRWazS7Vir0mGa\n-----END PRIVATE KEY-----\n",
+  "client_email": "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com",
+  "client_id": "115281677682440977267",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/tali-multi-modal%40tali-multi-modal.iam.gserviceaccount.com"
+}

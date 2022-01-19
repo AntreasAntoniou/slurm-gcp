@@ -17,6 +17,10 @@ controller_machine_type = "n1-standard-4"
 controller_image        = "projects/tali-multi-modal/global/images/tali-cluster-controller-v-1-0"
 controller_disk_type    = "pd-standard"
 controller_disk_size_gb = 100
+controller_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
+controller_scopes          = [
+     "https://www.googleapis.com/auth/cloud-platform"
+    ]
 #controller_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
 
 # controller_labels = {
@@ -48,6 +52,10 @@ login_machine_type = "n1-standard-2"
 login_image        = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-debian-10"
 login_disk_type    = "pd-standard"
 login_disk_size_gb = 20
+login_node_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
+login_node_scopes          = [
+     "https://www.googleapis.com/auth/cloud-platform"
+    ]
 #login_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
 
 # login_labels = {
@@ -125,7 +133,10 @@ partitions = [
     regional_capacity    = false
     regional_policy      = {}
     instance_template    = "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node"
-
+    compute_node_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
+    compute_node_scopes          = [
+     "https://www.googleapis.com/auth/cloud-platform"
+    ]
 
 #    compute_startup_script = <<-EOT
 #    #!/bin/bash
