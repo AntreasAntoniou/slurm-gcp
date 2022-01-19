@@ -2,24 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2d456d9d-7b41-4c42-b16a-8fe54223d0b6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/dm/common/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/dm/common/common.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dm/common/default.py" beforeDir="false" afterPath="$PROJECT_DIR$/dm/common/default.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dm/common/password.py" beforeDir="false" afterPath="$PROJECT_DIR$/dm/common/password.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dm/common/software_status.py" beforeDir="false" afterPath="$PROJECT_DIR$/dm/common/software_status.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dm/common/software_status_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/dm/common/software_status_script.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dm/common/vm_instance.py" beforeDir="false" afterPath="$PROJECT_DIR$/dm/common/vm_instance.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foundry/foundry.py" beforeDir="false" afterPath="$PROJECT_DIR$/foundry/foundry.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foundry/intel-image/slurm-intel-select-solution.py" beforeDir="false" afterPath="$PROJECT_DIR$/foundry/intel-image/slurm-intel-select-solution.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foundry/scripts/setup-intel-select-solution.py" beforeDir="false" afterPath="$PROJECT_DIR$/foundry/scripts/setup-intel-select-solution.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foundry/scripts/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/foundry/scripts/setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foundry/scripts/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/foundry/scripts/util.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/foundry/slurm-template.py" beforeDir="false" afterPath="$PROJECT_DIR$/foundry/slurm-template.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/resume.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/resume.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/slurmsync.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/slurmsync.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/suspend.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/suspend.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/util.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tf/examples/basic/basic.tfvars.example" beforeDir="false" afterPath="$PROJECT_DIR$/tf/examples/basic/basic.tfvars.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tf/examples/basic/basic.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/tf/examples/basic/basic.tfvars" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +23,8 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TF_FMT" value="false" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/tf/examples/basic" />
@@ -58,11 +43,30 @@
       <option name="presentableId" value="Default" />
       <updated>1642557467583</updated>
       <workItem from="1642557469436" duration="701000" />
-      <workItem from="1642559226914" duration="381000" />
+      <workItem from="1642559226914" duration="898000" />
     </task>
+    <task id="LOCAL-00001" summary="Clean and add improvements for pre-emptible usage.">
+      <created>1642559637135</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1642559637135</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Clean and add improvements for pre-emptible usage.">
+      <created>1642559839034</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1642559839034</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Clean and add improvements for pre-emptible usage." />
+    <option name="LAST_COMMIT_MESSAGE" value="Clean and add improvements for pre-emptible usage." />
   </component>
 </project>

@@ -125,10 +125,10 @@ partitions = [
     exclusive            = false
     enable_placement     = false
 
-    compute_node_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
-    compute_node_scopes          = [
-     "https://www.googleapis.com/auth/cloud-platform"
-    ]
+#    compute_node_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
+#    compute_node_scopes          = [
+#     "https://www.googleapis.com/auth/cloud-platform"
+#    ]
 
     instance_template            = "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node"
 
