@@ -117,13 +117,7 @@ partitions = [
     regional_policy      = {}
     gpu_count            = 1
     gpu_type             = "nvidia-tesla-a100"
-    network_storage      = [{
-      server_ip     = "none"
-      remote_mount  = "tali-experiments"
-      local_mount   = "/experiments"
-      fs_type       = "gcsfuse"
-      mount_options = "file_mode=664,dir_mode=775,allow_other"
-    }]
+    network_storage      = null
     preemptible_bursting = "spot"
     vpc_subnet           = null
     exclusive            = false
