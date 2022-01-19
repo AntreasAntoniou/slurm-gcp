@@ -1,4 +1,3 @@
-export MOUNT_DIR="/mnt/disk/filestore/"
 export DATASET_DIR="/mnt/disk/filestore/tali-dataset/"
 
 if [ ! -d "$DATASET_DIR" ]; then
