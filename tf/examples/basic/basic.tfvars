@@ -14,7 +14,7 @@ zone         = "us-central1-f"
 # complete_wait_time = 0
 
 controller_machine_type = "n1-standard-4"
-controller_image        = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-hpc-centos-7"
+controller_image        = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-debian-10"
 controller_disk_type    = "pd-standard"
 controller_disk_size_gb = 100
 #controller_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
@@ -45,7 +45,7 @@ controller_disk_size_gb = 100
 # EOT
 
 login_machine_type = "n1-standard-2"
-login_image        = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-hpc-centos-7"
+login_image        = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-debian-10"
 login_disk_type    = "pd-standard"
 login_disk_size_gb = 20
 #login_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
@@ -107,7 +107,7 @@ partitions = [
     static_node_count    = 1
     max_node_count       = 20
     zone                 = "us-central1-f"
-    image                = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-hpc-centos-7"
+    image                = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-debian-10"
     image_hyperthreads   = true
     cpu_platform         = "Intel Skylake"
     compute_disk_type    = "pd-standard"
