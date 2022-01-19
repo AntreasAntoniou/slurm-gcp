@@ -117,7 +117,6 @@ partitions = [
     regional_policy      = {}
     gpu_count            = 1
     gpu_type             = "nvidia-tesla-a100"
-    network_storage      = null
     preemptible_bursting = "spot"
     vpc_subnet           = null
     exclusive            = false
