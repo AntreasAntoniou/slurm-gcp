@@ -144,6 +144,28 @@ def create_instance(compute, instance_def, node_list, placement_group_name):
         }
         config["resourcePolicies"] = [placement_group_name]
 
+
+
+    if instance_def.compute_labels:
+        config["labels"] = instance_def.compute_labels
+
+    if instance_def.cpu_platform:
+        config["minCpuPlatform"] = instance_def.cpu_platform
+
+    if cfg.external_compute_ips:
+        config["networkInterfaces"][0]["accessConfigs"] = [
+            {"type": "ONE_TO_ONE_NAT", "name": "External NAT"}
+        ]
+
+    body = {}
+
+    if instance_def.instance_template:
+        body[
+            "sourceInstanceTemplate"
+        ] = "projects/{}/global/instanceTemplates/{}".format(
+            cfg.project, instance_def.instance_template
+        )
+
     if instance_def.gpu_count:
         config["guestAccelerators"] = [
             {
@@ -170,31 +192,12 @@ def create_instance(compute, instance_def, node_list, placement_group_name):
             "automaticRestart": False,
         }
 
-    if instance_def.compute_labels:
-        config["labels"] = instance_def.compute_labels
-
-    if instance_def.cpu_platform:
-        config["minCpuPlatform"] = instance_def.cpu_platform
-
-    if cfg.external_compute_ips:
-        config["networkInterfaces"][0]["accessConfigs"] = [
-            {"type": "ONE_TO_ONE_NAT", "name": "External NAT"}
-        ]
-
     perInstanceProperties = {k: {} for k in node_list}
-    body = {
-        "count": len(node_list),
-        "instanceProperties": config,
-        "perInstanceProperties": perInstanceProperties,
-    }
-    logging.info(config)
-
-    if instance_def.instance_template:
-        body[
-            "sourceInstanceTemplate"
-        ] = "projects/{}/global/instanceTemplates/{}".format(
-            cfg.project, instance_def.instance_template
-        )
+    body["count"] = len(node_list)
+    body["instanceProperties"] = config
+    body["perInstanceProperties"] = perInstanceProperties
+    log.debug(f'CONFIG MOTHERFUCKING FILE: {config}, '
+              f'BODY FILE {body}')
 
     # For non-exclusive requests, create as many instances as possible as the
     # nodelist isn't tied to a specific set of instances.
