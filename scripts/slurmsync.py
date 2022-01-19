@@ -25,14 +25,12 @@ import time
 from pathlib import Path
 
 import googleapiclient.discovery
-
 import util
 
+cfg = util.Config.load_config(Path(__file__).with_name("config.yaml"))
 
-cfg = util.Config.load_config(Path(__file__).with_name('config.yaml'))
-
-SCONTROL = Path(cfg.slurm_cmd_path or '')/'scontrol'
-LOGFILE = (Path(cfg.log_dir or '')/Path(__file__).name).with_suffix('.log')
+SCONTROL = Path(cfg.slurm_cmd_path or "") / "scontrol"
+LOGFILE = (Path(cfg.log_dir or "") / Path(__file__).name).with_suffix(".log")
 SCRIPTS_DIR = Path(__file__).parent.resolve()
 
 TOT_REQ_CNT = 1000
@@ -40,18 +38,18 @@ TOT_REQ_CNT = 1000
 retry_list = []
 
 if cfg.google_app_cred_path:
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cfg.google_app_cred_path
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = cfg.google_app_cred_path
 
 
 def to_hostlist(hostnames):
-    tmp_file = tempfile.NamedTemporaryFile(mode='w+t', delete=False)
-    tmp_file.writelines('\n'.join(hostnames))
+    tmp_file = tempfile.NamedTemporaryFile(mode="w+t", delete=False)
+    tmp_file.writelines("\n".join(hostnames))
     tmp_file.close()
     log.debug(f"tmp_file = {tmp_file.name}")
 
     hostlist = util.run(
-        f"{SCONTROL} show hostlist {tmp_file.name}",
-        get_stdout=True).stdout.rstrip()
+        f"{SCONTROL} show hostlist {tmp_file.name}", get_stdout=True
+    ).stdout.rstrip()
     log.debug(f"hostlist = {hostlist}")
     os.remove(tmp_file.name)
     return hostlist
@@ -64,6 +62,8 @@ def start_instances_cb(request_id, response, exception):
             retry_list.append(request_id)
         elif "was not found" in str(exception):
             util.spawn(f"{SCRIPTS_DIR}/resume.py {request_id}")
+
+
 # [END start_instances_cb]
 
 
@@ -73,8 +73,8 @@ def start_instances(compute, node_list, gcp_nodes):
     curr_batch = 0
     batch_list = []
     batch_list.insert(
-        curr_batch,
-        compute.new_batch_http_request(callback=start_instances_cb))
+        curr_batch, compute.new_batch_http_request(callback=start_instances_cb)
+    )
 
     for node in node_list:
 
@@ -86,19 +86,19 @@ def start_instances(compute, node_list, gcp_nodes):
             if not g_node:
                 log.error(f"Didn't find regional GCP record for '{node}'")
                 continue
-            zone = g_node['zone'].split('/')[-1]
+            zone = g_node["zone"].split("/")[-1]
 
         if req_cnt >= TOT_REQ_CNT:
             req_cnt = 0
             curr_batch += 1
             batch_list.insert(
-                curr_batch,
-                compute.new_batch_http_request(callback=start_instances_cb))
+                curr_batch, compute.new_batch_http_request(callback=start_instances_cb)
+            )
 
         batch_list[curr_batch].add(
-            compute.instances().start(project=cfg.project, zone=zone,
-                                      instance=node),
-            request_id=node)
+            compute.instances().start(project=cfg.project, zone=zone, instance=node),
+            request_id=node,
+        )
         req_cnt += 1
     try:
         for i, batch in enumerate(batch_list):
@@ -108,18 +108,20 @@ def start_instances(compute, node_list, gcp_nodes):
     except Exception:
         log.exception("error in start batch: ")
 
+
 # [END start_instances]
 
 
 def main():
-    compute = googleapiclient.discovery.build('compute', 'v1',
-                                              cache_discovery=False)
+    compute = googleapiclient.discovery.build("compute", "v1", cache_discovery=False)
 
     try:
         s_nodes = dict()
-        cmd = (f"{SCONTROL} show nodes | "
-               r"grep -oP '^NodeName=\K(\S+)|State=\K(\S+)' | "
-               "paste -sd',\n'")
+        cmd = (
+            f"{SCONTROL} show nodes | "
+            r"grep -oP '^NodeName=\K(\S+)|State=\K(\S+)' | "
+            "paste -sd',\n'"
+        )
         nodes = util.run(cmd, shell=True, check=True, get_stdout=True).stdout
         if nodes:
             # result is a list of tuples like:
@@ -129,32 +131,40 @@ def main():
             #   POWERING_DOWN
             # Modifiers on base state still include: @ (reboot), $ (maint),
             #   * (nonresponsive), # (powering up)
-            StateTuple = collections.namedtuple('StateTuple', 'base,flags')
+            StateTuple = collections.namedtuple("StateTuple", "base,flags")
 
             def make_state_tuple(state):
                 return StateTuple(state[0], set(state[1:]))
-            s_nodes = {node: make_state_tuple(args.split('+'))
-                       for node, args in
-                       map(lambda x: x.split(','), nodes.rstrip().splitlines())
-                       if 'CLOUD' in args}
 
-        g_nodes = util.get_regional_instances(compute, cfg.project,
-                                              cfg.instance_defs)
+            s_nodes = {
+                node: make_state_tuple(args.split("+"))
+                for node, args in map(
+                    lambda x: x.split(","), nodes.rstrip().splitlines()
+                )
+                if "CLOUD" in args
+            }
+
+        g_nodes = util.get_regional_instances(compute, cfg.project, cfg.instance_defs)
         for pid, part in cfg.instance_defs.items():
             page_token = ""
             while True:
                 if not part.regional_capacity:
                     resp = util.ensure_execute(
                         compute.instances().list(
-                            project=cfg.project, zone=part.zone,
-                            fields='items(name,zone,status),nextPageToken',
-                            pageToken=page_token, filter=f"name={pid}-*"))
+                            project=cfg.project,
+                            zone=part.zone,
+                            fields="items(name,zone,status),nextPageToken",
+                            pageToken=page_token,
+                            filter=f"name={pid}-*",
+                        )
+                    )
 
                     if "items" in resp:
-                        g_nodes.update({instance['name']: instance
-                                       for instance in resp['items']})
+                        g_nodes.update(
+                            {instance["name"]: instance for instance in resp["items"]}
+                        )
                     if "nextPageToken" in resp:
-                        page_token = resp['nextPageToken']
+                        page_token = resp["nextPageToken"]
                         continue
 
                 break
@@ -166,67 +176,81 @@ def main():
             g_node = g_nodes.get(s_node, None)
             pid = util.get_pid(s_node)
 
-            if (('POWERED_DOWN' not in s_state.flags) and
-                    ('POWERING_DOWN' not in s_state.flags)):
+            if ("POWERED_DOWN" not in s_state.flags) and (
+                "POWERING_DOWN" not in s_state.flags
+            ):
                 # slurm nodes that aren't powered down and are stopped in GCP:
                 #   mark down in slurm
                 #   start them in gcp
-                if g_node and (g_node['status'] == "TERMINATED"):
-                    if not s_state.base.startswith('DOWN'):
+                if g_node and (g_node["status"] == "TERMINATED"):
+                    if not s_state.base.startswith("DOWN"):
                         to_down.append(s_node)
-                    if cfg.instance_defs[pid].preemptible_bursting != 'false':
+                    if cfg.instance_defs[pid].preemptible_bursting != "false":
                         to_start.append(s_node)
 
                 # can't check if the node doesn't exist in GCP while the node
                 # is booting because it might not have been created yet by the
                 # resume script.
                 # This should catch the completing states as well.
-                if (g_node is None and "POWERING_UP" not in s_state.flags and
-                        not s_state.base.startswith('DOWN')):
+                if (
+                    g_node is None
+                    and "POWERING_UP" not in s_state.flags
+                    and not s_state.base.startswith("DOWN")
+                ):
                     to_down.append(s_node)
 
             elif g_node is None:
                 # find nodes that are down~ in slurm and don't exist in gcp:
                 #   mark idle~
-                if s_state.base.startswith('DOWN') and 'POWERED_DOWN' in s_state.flags:
+                if s_state.base.startswith("DOWN") and "POWERED_DOWN" in s_state.flags:
                     to_idle.append(s_node)
-                elif 'POWERING_DOWN' in s_state.flags:
+                elif "POWERING_DOWN" in s_state.flags:
                     to_idle.append(s_node)
-                elif s_state.base.startswith('COMPLETING'):
+                elif s_state.base.startswith("COMPLETING"):
                     to_down.append(s_node)
 
         if len(to_down):
-            log.info("{} stopped/deleted instances ({})".format(
-                len(to_down), ",".join(to_down)))
-            log.info("{} instances to start ({})".format(
-                len(to_start), ",".join(to_start)))
+            log.info(
+                "{} stopped/deleted instances ({})".format(
+                    len(to_down), ",".join(to_down)
+                )
+            )
+            log.info(
+                "{} instances to start ({})".format(len(to_start), ",".join(to_start))
+            )
             hostlist = to_hostlist(to_down)
 
-            util.run(f"{SCONTROL} update nodename={hostlist} state=down "
-                     "reason='Instance stopped/deleted'")
+            util.run(
+                f"{SCONTROL} update nodename={hostlist} state=down "
+                "reason='Instance stopped/deleted'"
+            )
 
             while True:
                 start_instances(compute, to_start, g_nodes)
                 if not len(retry_list):
                     break
 
-                log.debug("got {} nodes to retry ({})"
-                          .format(len(retry_list), ','.join(retry_list)))
+                log.debug(
+                    "got {} nodes to retry ({})".format(
+                        len(retry_list), ",".join(retry_list)
+                    )
+                )
                 to_start = list(retry_list)
                 del retry_list[:]
 
         if len(to_idle):
-            log.info("{} instances to resume ({})".format(
-                len(to_idle), ','.join(to_idle)))
+            log.info(
+                "{} instances to resume ({})".format(len(to_idle), ",".join(to_idle))
+            )
 
             hostlist = to_hostlist(to_idle)
             util.run(f"{SCONTROL} update nodename={hostlist} state=resume")
 
         orphans = [
-            inst for inst, info in g_nodes.items()
-            if info['status'] == 'RUNNING' and (
-                inst not in s_nodes or 'POWERED_DOWN' in s_nodes[inst].flags
-            )
+            inst
+            for inst, info in g_nodes.items()
+            if info["status"] == "RUNNING"
+            and (inst not in s_nodes or "POWERED_DOWN" in s_nodes[inst].flags)
         ]
         if orphans:
             if args.debug:
@@ -241,30 +265,34 @@ def main():
     except Exception:
         log.exception("failed to sync instances")
 
+
 # [END main]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--debug', '-d', dest='debug', action='store_true',
-                        help='Enable debugging output')
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--debug",
+        "-d",
+        dest="debug",
+        action="store_true",
+        help="Enable debugging output",
+    )
 
     args = parser.parse_args()
     if args.debug:
-        util.config_root_logger(level='DEBUG', util_level='DEBUG',
-                                logfile=LOGFILE)
+        util.config_root_logger(level="DEBUG", util_level="DEBUG", logfile=LOGFILE)
     else:
-        util.config_root_logger(level='INFO', util_level='ERROR',
-                                logfile=LOGFILE)
+        util.config_root_logger(level="INFO", util_level="ERROR", logfile=LOGFILE)
     log = logging.getLogger(Path(__file__).name)
     sys.excepthook = util.handle_exception
 
     # only run one instance at a time
-    pid_file = (Path('/tmp')/Path(__file__).name).with_suffix('.pid')
-    with pid_file.open('w') as fp:
+    pid_file = (Path("/tmp") / Path(__file__).name).with_suffix(".pid")
+    with pid_file.open("w") as fp:
         try:
             fcntl.lockf(fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except IOError:

@@ -18,28 +18,33 @@ import logging
 import shlex
 import subprocess as sp
 import time
-import yaml
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
+import yaml
 from googleapiclient import discovery
 
-
 log = logging
-logging.basicConfig(level=logging.INFO, format='')
+logging.basicConfig(level=logging.INFO, format="")
 
 
-def run(cmd, wait=0, quiet=False, get_stdout=False,
-        shell=False, universal_newlines=True, **kwargs):
-    """ run in subprocess. Optional wait after return. """
+def run(
+    cmd,
+    wait=0,
+    quiet=False,
+    get_stdout=False,
+    shell=False,
+    universal_newlines=True,
+    **kwargs,
+):
+    """run in subprocess. Optional wait after return."""
     if not quiet:
         log.info(f"run: {cmd}")
     if get_stdout:
-        kwargs['stdout'] = sp.PIPE
+        kwargs["stdout"] = sp.PIPE
 
     args = cmd if shell else shlex.split(cmd)
-    ret = sp.run(args, shell=shell, universal_newlines=universal_newlines,
-                 **kwargs)
+    ret = sp.run(args, shell=shell, universal_newlines=universal_newlines, **kwargs)
     if wait:
         time.sleep(wait)
     return ret
@@ -49,23 +54,24 @@ def gcloud_dm(cmd, *args, **kwargs):
     return run(f"gcloud deployment-manager {cmd}", *args, **kwargs)
 
 
-project = run("gcloud config list --format='value(core.project)'",
-              get_stdout=True, quiet=True).stdout.rstrip()
+project = run(
+    "gcloud config list --format='value(core.project)'", get_stdout=True, quiet=True
+).stdout.rstrip()
 
 
 def wait_for_stop(instance, zone, timeout=30):
-    """ Wait for instance to stop, timeout in minutes """
-    compute = discovery.build('compute', 'v1', cache_discovery=False)
+    """Wait for instance to stop, timeout in minutes"""
+    compute = discovery.build("compute", "v1", cache_discovery=False)
     log.info(f"waiting for {instance} to stop")
     interval = 10
     attempts = (timeout * 60) // interval
     while True:
-        resp = compute.instances().get(
-            project=project,
-            zone=zone,
-            fields='status',
-            instance=instance).execute()
-        if resp['status'] == 'TERMINATED':
+        resp = (
+            compute.instances()
+            .get(project=project, zone=zone, fields="status", instance=instance)
+            .execute()
+        )
+        if resp["status"] == "TERMINATED":
             break
         time.sleep(interval)
         attempts -= 1
@@ -74,15 +80,15 @@ def wait_for_stop(instance, zone, timeout=30):
             return False
     return True
 
-def create_intel_images(instances):
 
+def create_intel_images(instances):
     def create_image(instance, image_name, zone):
         log.info(f"... waiting to create image for {instance}")
         if not wait_for_stop(instance, zone):
             return False
 
-        compute = discovery.build('compute', 'v1', cache_discovery=False)
-        check_image = compute.images().get(project=project,image=image_name)
+        compute = discovery.build("compute", "v1", cache_discovery=False)
+        check_image = compute.images().get(project=project, image=image_name)
         try:
             response = check_image.execute()
             log.info(f"Delete existed {image_name} image before creating updated one.")
@@ -91,30 +97,35 @@ def create_intel_images(instances):
             log.info(f"Create new {image_name} image.")
 
         try:
-            run(f"gcloud compute images create {image_name} --source-disk {instance}"
+            run(
+                f"gcloud compute images create {image_name} --source-disk {instance}"
                 f" --source-disk-zone {zone} --force --family {instance} --quiet",
-                check=True)
+                check=True,
+            )
         except sp.CalledProcessError:
             return False
         return True
- 
+
     with ThreadPoolExecutor() as exe:
         results = exe.map(lambda inst: create_image(**inst), instances.values())
     # return True if all images successfully created
     return all(results)
 
+
 def create_images(instances):
     tag = "{:%Y-%m-%d-%H%M%S}".format(datetime.now(timezone.utc))
-    
+
     def create_image(instance, image_name, zone):
         log.info(f"... waiting to create image for {instance}")
         if not wait_for_stop(instance, zone):
             return False
         image_name = image_name.format(tag=tag)
         try:
-            run(f"gcloud compute images create {image_name} --source-disk {instance}"
+            run(
+                f"gcloud compute images create {image_name} --source-disk {instance}"
                 f" --source-disk-zone {zone} --force --family {instance} --quiet",
-                check=True)
+                check=True,
+            )
         except sp.CalledProcessError:
             return False
         return True
@@ -126,48 +137,65 @@ def create_images(instances):
 
 
 def read_instances(dep_name):
-    """ Get instances from the deployment """
-    res = gcloud_dm("resources list "
-                    f"--deployment={dep_name} "
-                    "--filter='type=compute.v1.instance' "
-                    "--format='yaml(name,properties)'",
-                    get_stdout=True, check=True).stdout
+    """Get instances from the deployment"""
+    res = gcloud_dm(
+        "resources list "
+        f"--deployment={dep_name} "
+        "--filter='type=compute.v1.instance' "
+        "--format='yaml(name,properties)'",
+        get_stdout=True,
+        check=True,
+    ).stdout
 
     # load all the properties from the yaml text it comes as
     instance_list = [
         {
-            'name': inst['name'],
-            'properties': yaml.safe_load(inst['properties']),
-        } for inst in yaml.safe_load_all(res)
+            "name": inst["name"],
+            "properties": yaml.safe_load(inst["properties"]),
+        }
+        for inst in yaml.safe_load_all(res)
     ]
     # get zone and image_name from properties
     # getting from metadata requires a search because it's a list of key-value
     # pairs
     instances = {
-        el['name']: dict(
-            instance=el['name'],
-            image_name=next(m for m in el['properties']['metadata']['items']
-                            if m['key'] == 'image_name')['value'],
-            zone=el['properties']['zone'],
-        ) for el in instance_list
+        el["name"]: dict(
+            instance=el["name"],
+            image_name=next(
+                m
+                for m in el["properties"]["metadata"]["items"]
+                if m["key"] == "image_name"
+            )["value"],
+            zone=el["properties"]["zone"],
+        )
+        for el in instance_list
     }
     log.info(
-        '\n'.join("{instance}: {zone}, {image_name}".format(**inst)
-                  for inst in instances.values()),
+        "\n".join(
+            "{instance}: {zone}, {image_name}".format(**inst)
+            for inst in instances.values()
+        ),
     )
     return instances
 
 
-def main(dep_name='slurm-image-foundry', cleanup=True, force=False,
-         resume=False, pause=False, intel_image=False):
+def main(
+    dep_name="slurm-image-foundry",
+    cleanup=True,
+    force=False,
+    resume=False,
+    pause=False,
+    intel_image=False,
+):
 
     if intel_image:
-        dep_name='slurm-image-foundry-intel'
+        dep_name = "slurm-image-foundry-intel"
 
-    existing = gcloud_dm("deployments list "
-                         f"--filter='name ~ ^{dep_name}$' "
-                         "--format='value(name)'",
-                         get_stdout=True, check=True).stdout
+    existing = gcloud_dm(
+        "deployments list " f"--filter='name ~ ^{dep_name}$' " "--format='value(name)'",
+        get_stdout=True,
+        check=True,
+    ).stdout
     if existing:
         log.info(f"{dep_name} deployment found,")
         if resume:
@@ -183,13 +211,20 @@ def main(dep_name='slurm-image-foundry', cleanup=True, force=False,
         return
 
     if not resume:
-        glob_enabled = run("gcloud config get-value deployment_manager/glob_imports",
-                           get_stdout=True).stdout.strip() == "True"
+        glob_enabled = (
+            run(
+                "gcloud config get-value deployment_manager/glob_imports",
+                get_stdout=True,
+            ).stdout.strip()
+            == "True"
+        )
         if not glob_enabled:
             run("gcloud config set deployment_manager/glob_imports True")
 
         if intel_image:
-            gcloud_dm(f"deployments create {dep_name} --config intel-image/images-intel-select-solution.yaml")
+            gcloud_dm(
+                f"deployments create {dep_name} --config intel-image/images-intel-select-solution.yaml"
+            )
         else:
             gcloud_dm(f"deployments create {dep_name} --config images.yaml")
 
@@ -200,12 +235,14 @@ def main(dep_name='slurm-image-foundry', cleanup=True, force=False,
 
     if pause:
         with ThreadPoolExecutor() as exe:
-            exe.map(lambda inst: wait_for_stop(inst['instance'], inst['zone']),
-                    instances.values())
+            exe.map(
+                lambda inst: wait_for_stop(inst["instance"], inst["zone"]),
+                instances.values(),
+            )
         return
 
     if intel_image:
-        create_intel_images(instances) 
+        create_intel_images(instances)
     else:
         create_images(instances)
 
@@ -214,32 +251,65 @@ def main(dep_name='slurm-image-foundry', cleanup=True, force=False,
 
 
 OPTIONS = (
-    ('dep_name',
-     dict(metavar='deployment', action='store', nargs='?', default='slurm-image-foundry',
-          help="Name of the deployment to be created to manage the foundry instances")),
-    ('--force', '-f',
-     dict(dest='force', action='store_true',
-          help="delete existing deployments of the same name first")),
-    ('--no-cleanup', '-c',
-     dict(dest='cleanup', action='store_false',
-          help="Do not delete the deployment at the end. By default, the deployment is deleted if all images were successfully created")),
-    ('--resume', '-r',
-     dict(dest='resume', action='store_true',
-          help="Create images from whatever instances are in the existing deployment")),
-    ('--pause', '-p',
-     dict(dest='pause', action='store_true',
-          help="Do not create images from the instances to allow for customizations")),
-    ('--intel_image', 
-     dict(dest="intel_image", action='store_true',
-          help="Create images for the Intel Select Solution cluster.")),
-          
+    (
+        "dep_name",
+        dict(
+            metavar="deployment",
+            action="store",
+            nargs="?",
+            default="slurm-image-foundry",
+            help="Name of the deployment to be created to manage the foundry instances",
+        ),
+    ),
+    (
+        "--force",
+        "-f",
+        dict(
+            dest="force",
+            action="store_true",
+            help="delete existing deployments of the same name first",
+        ),
+    ),
+    (
+        "--no-cleanup",
+        "-c",
+        dict(
+            dest="cleanup",
+            action="store_false",
+            help="Do not delete the deployment at the end. By default, the deployment is deleted if all images were successfully created",
+        ),
+    ),
+    (
+        "--resume",
+        "-r",
+        dict(
+            dest="resume",
+            action="store_true",
+            help="Create images from whatever instances are in the existing deployment",
+        ),
+    ),
+    (
+        "--pause",
+        "-p",
+        dict(
+            dest="pause",
+            action="store_true",
+            help="Do not create images from the instances to allow for customizations",
+        ),
+    ),
+    (
+        "--intel_image",
+        dict(
+            dest="intel_image",
+            action="store_true",
+            help="Create images for the Intel Select Solution cluster.",
+        ),
+    ),
 )
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description="Slurm Image Foundry"
-    )
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Slurm Image Foundry")
     for x in OPTIONS:
         parser.add_argument(*x[:-1], **x[-1])
     args = parser.parse_args()

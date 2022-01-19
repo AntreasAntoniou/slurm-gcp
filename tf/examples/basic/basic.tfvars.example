@@ -1,6 +1,6 @@
-cluster_name = "g1"
-project      = "<project>"
-zone         = "us-central1-a"
+cluster_name = "tali-cluster-0"
+project      = "tali-multi-modal"
+zone         = "us-central1-f"
 
 # network_name            = "<existing network name>"
 # subnetwork_name         = "<existing subnetwork name>"
@@ -13,10 +13,10 @@ zone         = "us-central1-a"
 # suspend_time       = 300
 # complete_wait_time = 0
 
-controller_machine_type = "n1-standard-2"
+controller_machine_type = "n1-standard-4"
 controller_image        = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-hpc-centos-7"
 controller_disk_type    = "pd-standard"
-controller_disk_size_gb = 50
+controller_disk_size_gb = 100
 # controller_labels = {
 #   key1 = "val1"
 #   key2 = "val2"
@@ -97,73 +97,54 @@ login_disk_size_gb = 20
 # EOT
 
 partitions = [
-  { name                 = "debug"
-    machine_type         = "c2-standard-4"
-    static_node_count    = 0
-    max_node_count       = 10
-    zone                 = "us-central1-a"
+
+  { name                 = "worker-small"
+    machine_type         = "a2-highgpu-1g"
+    static_node_count    = 1
+    max_node_count       = 20
+    zone                 = "us-central1-f"
     image                = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-hpc-centos-7"
     image_hyperthreads   = true
+    cpu_platform         = "Intel Skylake"
     compute_disk_type    = "pd-standard"
-    compute_disk_size_gb = 20
+    compute_disk_size_gb = 350
     compute_labels       = {}
-    cpu_platform         = null
-    gpu_count            = 0
-    gpu_type             = null
-    network_storage      = []
-    preemptible_bursting = false
+    regional_capacity    = false
+    regional_policy      = {}
+    gpu_count            = 1
+    gpu_type             = "nvidia-tesla-a100"
+    network_storage      = [{
+      server_ip     = "none"
+      remote_mount  = "tali-experiments"
+      local_mount   = "/experiments"
+      fs_type       = "gcsfuse"
+      mount_options = "file_mode=664,dir_mode=775,allow_other"
+    }]
+    preemptible_bursting = "true"
     vpc_subnet           = null
     exclusive            = false
     enable_placement     = false
-    regional_capacity    = false
-    regional_policy      = {}
-    instance_template    = null
-  },
-  #  { name                 = "partition2"
-  #    machine_type         = "c2-standard-16"
-  #    static_node_count    = 0
-  #    max_node_count       = 20
-  #    zone                 = "us-central1-a"
-  #    image                = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-hpc-centos-7"
-  #    image_hyperthreads   = true
-  #
-  #    compute_disk_type    = "pd-ssd"
-  #    compute_disk_size_gb = 20
-  #    compute_labels       = {
-  #      key1 = "val1"
-  #      key2 = "val2"
-  #    }
-  #    cpu_platform         = "Intel Skylake"
-  #    gpu_count            = 8
-  #    gpu_type             = "nvidia-tesla-v100"
-  #    network_storage      = [{
-  #      server_ip     = "none"
-  #      remote_mount  = "<gcs bucket name>"
-  #      local_mount   = "/data"
-  #      fs_type       = "gcsfuse"
-  #      mount_options = "file_mode=664,dir_mode=775,allow_other"
-  #    }]
-  #    preemptible_bursting = true
-  #    vpc_subnet           = null
-  #    exclusive            = false
-  #    enable_placement     = false
-  #
-  #    # With regional_capacity : true, the region can be specified in the zone.
-  #    # Otherwise the region will be inferred from the zone.
-  #    zone = "us-central"
-  #    regional_capacity    = true
-  #    # Optional
-  #    regional_policy      = {
-  #        locations = {
-  #            "zones/us-central-a" = {
-  #                preference = "DENY"
-  #            }
-  #        }
-  #    }
-  #
-  #    # When specifying an instance template, specified compute fields will
-  #    # override the template properties.
-  #    instance_template = "my-template"
-  #  }
+
+    compute_node_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
+    compute_node_scopes          = [
+     "https://www.googleapis.com/auth/cloud-platform"
+    ]
+
+    instance_template            = "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node"
+
+
+#    compute_startup_script = <<-EOT
+#    #!/bin/bash
+#    echo startup script in the tfvars > custom-compute-ran-var.txt
+#    EOT
+
+    # With regional_capacity : true, the region can be specified in the zone.
+    # Otherwise the region will be inferred from the zone.
+
+
+    # When specifying an instance template, specified compute fields will
+    # override the template properties
+  }
 ]
+
 

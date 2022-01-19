@@ -28,34 +28,31 @@ import yaml
 
 
 def _CheckScript(context):
-  """Returns the checkScript property or a successful no-op if unspecified."""
-  return context.properties.get('checkScript', 'return 0')
+    """Returns the checkScript property or a successful no-op if unspecified."""
+    return context.properties.get("checkScript", "return 0")
 
 
 def _InitScript(context):
-  """Returns the initScript property or a successful no-op if unspecified."""
-  return context.properties.get('initScript', 'return 0')
+    """Returns the initScript property or a successful no-op if unspecified."""
+    return context.properties.get("initScript", "return 0")
 
 
 def _StartupScript(context):
-  """Generates and returns a startup script."""
-  params = {
-      'check_script': _CheckScript(context),
-      'init_script': _InitScript(context),
-  }
-  template = context.imports['software_status.sh.tmpl']
-  return jinja2.Environment().from_string(template).render(**params)
+    """Generates and returns a startup script."""
+    params = {
+        "check_script": _CheckScript(context),
+        "init_script": _InitScript(context),
+    }
+    template = context.imports["software_status.sh.tmpl"]
+    return jinja2.Environment().from_string(template).render(**params)
 
 
 def GenerateConfig(context):
-  """Entry function to generate the DM config."""
-  content = {
-      'resources': [],
-      'outputs': [
-          {
-              'name': 'startup-script',
-              'value': _StartupScript(context)
-          },
-      ]
-  }
-  return yaml.safe_dump(content)
+    """Entry function to generate the DM config."""
+    content = {
+        "resources": [],
+        "outputs": [
+            {"name": "startup-script", "value": _StartupScript(context)},
+        ],
+    }
+    return yaml.safe_dump(content)

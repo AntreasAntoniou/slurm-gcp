@@ -23,70 +23,71 @@ import socket
 import sys
 import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from functools import partialmethod
 from pathlib import Path
 from subprocess import DEVNULL
-from concurrent.futures import ThreadPoolExecutor
 
 import googleapiclient.discovery
 import requests
 import yaml
 
-
 Path.mkdirp = partialmethod(Path.mkdir, parents=True, exist_ok=True)
-SCRIPTSDIR = Path('/root/image-scripts')
+SCRIPTSDIR = Path("/root/image-scripts")
 SCRIPTSDIR.mkdirp()
 # get util.py from metadata
-UTIL_FILE = SCRIPTSDIR/'util.py'
+UTIL_FILE = SCRIPTSDIR / "util.py"
 if not UTIL_FILE.exists():
     print(f"{UTIL_FILE} not found, attempting to fetch from metadata")
     try:
-        resp = requests.get('http://metadata.google.internal/computeMetadata/v1/instance/attributes/util-script',
-                            headers={'Metadata-Flavor': 'Google'})
+        resp = requests.get(
+            "http://metadata.google.internal/computeMetadata/v1/instance/attributes/util-script",
+            headers={"Metadata-Flavor": "Google"},
+        )
         resp.raise_for_status()
         UTIL_FILE.write_text(resp.text)
     except requests.exceptions.RequestException:
         print("util.py script not found in metadata either, aborting")
         sys.exit(1)
 
-spec = importlib.util.spec_from_file_location('util', UTIL_FILE)
+spec = importlib.util.spec_from_file_location("util", UTIL_FILE)
 util = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = util
 spec.loader.exec_module(util)
 cd = util.cd  # import util.cd into local namespace
 cached_property = util.cached_property
 
-util.config_root_logger(file=str(SCRIPTSDIR/'setup.log'))
+util.config_root_logger(file=str(SCRIPTSDIR / "setup.log"))
 log = logging.getLogger(Path(__file__).name)
 
 
 class Config(util.NSDict):
-    """ Loads config from yaml and holds values in nested namespaces """
+    """Loads config from yaml and holds values in nested namespaces"""
 
     def __init__(self, *args, **kwargs):
         super(Config, self).__init__(*args, **kwargs)
 
     @staticmethod
     def _prop_from_meta(item):
-        return yaml.safe_load(util.get_metadata(f'attributes/{item}'))
+        return yaml.safe_load(util.get_metadata(f"attributes/{item}"))
 
     @cached_property
     def slurm_version(self):
         # match 'b:<branch_name>' or eg. '20.02-latest', '20.02.0', '20.02.0-1'
-        #patt = re.compile(r'(b:\S+)|((\d+[\.-])+\w+)')
-        return self._prop_from_meta('slurm_version')
+        # patt = re.compile(r'(b:\S+)|((\d+[\.-])+\w+)')
+        return self._prop_from_meta("slurm_version")
 
     @cached_property
     def libjwt_version(self):
-        return self._prop_from_meta('libjwt_version')
+        return self._prop_from_meta("libjwt_version")
 
     @cached_property
     def ompi_version(self):
-        return self._prop_from_meta('ompi_version')
+        return self._prop_from_meta("ompi_version")
 
     @cached_property
     def zone(self):
-        return util.get_metadata('zone')
+        return util.get_metadata("zone")
 
     @cached_property
     def hostname(self):
@@ -94,52 +95,52 @@ class Config(util.NSDict):
 
     @cached_property
     def os_name(self):
-        os_rel = Path('/etc/os-release').read_text()
-        os_info = dict(s.split('=') for s in shlex.split(os_rel))
-        return "{ID}{VERSION_ID}".format(**os_info).replace('.', '')
+        os_rel = Path("/etc/os-release").read_text()
+        os_info = dict(s.split("=") for s in shlex.split(os_rel))
+        return "{ID}{VERSION_ID}".format(**os_info).replace(".", "")
 
     @property
     def region(self):
-        return self.zone and '-'.join(self.zone.split('-')[:-1])
+        return self.zone and "-".join(self.zone.split("-")[:-1])
 
     @property
     def pacman(self):
         yum = "yum"
         apt = "apt-get"
         return {
-            'centos7': yum,
-            'centos8': yum,
-            'debian9': apt,
-            'debian10': apt,
-            'ubuntu2004': apt,
+            "centos7": yum,
+            "centos8": yum,
+            "debian9": apt,
+            "debian10": apt,
+            "ubuntu2004": apt,
         }[self.os_name]
 
     def update(self):
-        if self.os_name in ('centos7', 'centos8'):
+        if self.os_name in ("centos7", "centos8"):
             return
         util.run(f"{cfg.pacman} update")
 
     def __getattr__(self, item):
-        """ only called if item is not found in self """
+        """only called if item is not found in self"""
         return None
 
-    
+
 # get setup config from metadata
-#config_yaml = yaml.safe_load(util.get_metadata('attributes/config'))
-#if not util.get_metadata('attributes/terraform'):
+# config_yaml = yaml.safe_load(util.get_metadata('attributes/config'))
+# if not util.get_metadata('attributes/terraform'):
 #    config_yaml = yaml.safe_load(config_yaml)
 cfg = Config()
-    
-    
+
+
 def stop_instance():
     util.run(f"gcloud compute instances stop {cfg.hostname} --zone {cfg.zone} --quiet")
-    
-    
+
+
 def main():
     # Build image upon the slurm-hpc image.
-    # Only need to stop the instances. 
+    # Only need to stop the instances.
     stop_instance()
-        
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

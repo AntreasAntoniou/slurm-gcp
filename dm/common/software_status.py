@@ -52,150 +52,145 @@ An example YAML showing how this template can be used:
 import six
 import yaml
 
-RTC_ENDPOINT = 'https://runtimeconfig.googleapis.com/v1beta1'
-STATUS_PATH = 'status'
-DEFAULT_TIMEOUT = '300'  # 5 minutes
+RTC_ENDPOINT = "https://runtimeconfig.googleapis.com/v1beta1"
+STATUS_PATH = "status"
+DEFAULT_TIMEOUT = "300"  # 5 minutes
 DEFAULT_SUCCESS_NUMBER = 1
 DEFAULT_FAILURE_NUMBER = 1
 
 
 class PropertyError(Exception):
-  """An exception raised when property values are invalid."""
+    """An exception raised when property values are invalid."""
 
 
 def _Prefix(context):
-  """Returns the prefix for resource names."""
-  return context.properties.get('prefix', context.env['deployment'])
+    """Returns the prefix for resource names."""
+    return context.properties.get("prefix", context.env["deployment"])
 
 
 def _ConfigName(context):
-  """Returns the short config name."""
-  return '{}-config'.format(_Prefix(context))
+    """Returns the short config name."""
+    return "{}-config".format(_Prefix(context))
 
 
 def _ConfigUrl(context):
-  """Returns the full URL to the config, including hostname."""
-  return '{endpoint}/projects/{project}/configs/{config}'.format(
-      endpoint=RTC_ENDPOINT,
-      project=context.env['project'],
-      config=_ConfigName(context))
+    """Returns the full URL to the config, including hostname."""
+    return "{endpoint}/projects/{project}/configs/{config}".format(
+        endpoint=RTC_ENDPOINT,
+        project=context.env["project"],
+        config=_ConfigName(context),
+    )
 
 
 def _WaiterName(context):
-  """Returns the short waiter name."""
-  # This name is only used for the DM manifest entry. The actual waiter name
-  # within RuntimeConfig is static, as it is scoped to the config resource.
-  return '{}-software'.format(_Prefix(context))
+    """Returns the short waiter name."""
+    # This name is only used for the DM manifest entry. The actual waiter name
+    # within RuntimeConfig is static, as it is scoped to the config resource.
+    return "{}-software".format(_Prefix(context))
 
 
 def _Timeout(context):
-  """Returns the timeout property or a default value if unspecified."""
-  timeout = context.properties.get('timeout', DEFAULT_TIMEOUT)
-  try:
-    return str(int(timeout))
-  except ValueError:
-    raise PropertyError('Invalid timeout value: {}'.format(timeout))
+    """Returns the timeout property or a default value if unspecified."""
+    timeout = context.properties.get("timeout", DEFAULT_TIMEOUT)
+    try:
+        return str(int(timeout))
+    except ValueError:
+        raise PropertyError("Invalid timeout value: {}".format(timeout))
 
 
 def _SuccessNumber(context):
-  """Returns the successNumber property or a default value if unspecified."""
-  number = context.properties.get('successNumber', DEFAULT_SUCCESS_NUMBER)
-  try:
-    number = int(number)
-    if number < 1:
-      raise PropertyError('successNumber value must be greater than 0.')
-    return number
-  except ValueError:
-    raise PropertyError('Invalid successNumber value: {}'.format(number))
+    """Returns the successNumber property or a default value if unspecified."""
+    number = context.properties.get("successNumber", DEFAULT_SUCCESS_NUMBER)
+    try:
+        number = int(number)
+        if number < 1:
+            raise PropertyError("successNumber value must be greater than 0.")
+        return number
+    except ValueError:
+        raise PropertyError("Invalid successNumber value: {}".format(number))
 
 
 def _FailureNumber(context):
-  """Returns the failureNumber property or a default value if unspecified."""
-  number = context.properties.get('failureNumber', DEFAULT_FAILURE_NUMBER)
-  try:
-    number = int(number)
-    if number < 1:
-      raise PropertyError('failureNumber value must be greater than 0.')
-    return number
-  except ValueError:
-    raise PropertyError('Invalid failureNumber value: {}'.format(number))
+    """Returns the failureNumber property or a default value if unspecified."""
+    number = context.properties.get("failureNumber", DEFAULT_FAILURE_NUMBER)
+    try:
+        number = int(number)
+        if number < 1:
+            raise PropertyError("failureNumber value must be greater than 0.")
+        return number
+    except ValueError:
+        raise PropertyError("Invalid failureNumber value: {}".format(number))
 
 
 def _WaiterDependsOn(context):
-  """Returns the waiterDependsOn property or an empty list if unspecified."""
-  depends_on = context.properties.get('waiterDependsOn', [])
-  if not isinstance(depends_on, list):
-    raise PropertyError('waiterDependsOn must be a list: {}'.format(depends_on))
+    """Returns the waiterDependsOn property or an empty list if unspecified."""
+    depends_on = context.properties.get("waiterDependsOn", [])
+    if not isinstance(depends_on, list):
+        raise PropertyError("waiterDependsOn must be a list: {}".format(depends_on))
 
-  for item in depends_on:
-    if not isinstance(item, six.string_types):
-      raise PropertyError(
-          'waiterDependsOn must be a list of strings: {}'.format(depends_on))
+    for item in depends_on:
+        if not isinstance(item, six.string_types):
+            raise PropertyError(
+                "waiterDependsOn must be a list of strings: {}".format(depends_on)
+            )
 
-  return depends_on
+    return depends_on
 
 
 def _RuntimeConfig(context):
-  """Constructs a RuntimeConfig resource."""
+    """Constructs a RuntimeConfig resource."""
 
-  name = _Prefix(context)
-  return {
-      'name': _ConfigName(context),
-      'type': 'runtimeconfig.v1beta1.config',
-      'properties': {
-          'config': _ConfigName(context),
-          'description': ('Holds software readiness status '
-                          'for {}').format(name),
-      },
-  }
+    name = _Prefix(context)
+    return {
+        "name": _ConfigName(context),
+        "type": "runtimeconfig.v1beta1.config",
+        "properties": {
+            "config": _ConfigName(context),
+            "description": ("Holds software readiness status " "for {}").format(name),
+        },
+    }
 
 
 def _Waiter(context):
-  """Constructs a waiter resource."""
+    """Constructs a waiter resource."""
 
-  waiter_timeout = _Timeout(context)
-  return {
-      'name': _WaiterName(context),
-      'type': 'runtimeconfig.v1beta1.waiter',
-      'metadata': {
-          'dependsOn': _WaiterDependsOn(context),
-      },
-      'properties': {
-          'parent': '$(ref.{}.name)'.format(_ConfigName(context)),
-          'waiter': 'software',
-          'timeout': '{}s'.format(waiter_timeout),
-          'success': {
-              'cardinality': {
-                  'number': _SuccessNumber(context),
-                  'path': '{}/success'.format(STATUS_PATH),
-              },
-          },
-          'failure': {
-              'cardinality': {
-                  'number': _FailureNumber(context),
-                  'path': '{}/failure'.format(STATUS_PATH),
-              },
-          },
-      },
-  }
+    waiter_timeout = _Timeout(context)
+    return {
+        "name": _WaiterName(context),
+        "type": "runtimeconfig.v1beta1.waiter",
+        "metadata": {
+            "dependsOn": _WaiterDependsOn(context),
+        },
+        "properties": {
+            "parent": "$(ref.{}.name)".format(_ConfigName(context)),
+            "waiter": "software",
+            "timeout": "{}s".format(waiter_timeout),
+            "success": {
+                "cardinality": {
+                    "number": _SuccessNumber(context),
+                    "path": "{}/success".format(STATUS_PATH),
+                },
+            },
+            "failure": {
+                "cardinality": {
+                    "number": _FailureNumber(context),
+                    "path": "{}/failure".format(STATUS_PATH),
+                },
+            },
+        },
+    }
 
 
 def GenerateConfig(context):
-  """Entry function to generate the DM config."""
-  content = {
-      'resources': [
-          _RuntimeConfig(context),
-          _Waiter(context),
-      ],
-      'outputs': [
-          {
-              'name': 'config-url',
-              'value': _ConfigUrl(context)
-          },
-          {
-              'name': 'variable-path',
-              'value': STATUS_PATH
-          },
-      ]
-  }
-  return yaml.safe_dump(content)
+    """Entry function to generate the DM config."""
+    content = {
+        "resources": [
+            _RuntimeConfig(context),
+            _Waiter(context),
+        ],
+        "outputs": [
+            {"name": "config-url", "value": _ConfigUrl(context)},
+            {"name": "variable-path", "value": STATUS_PATH},
+        ],
+    }
+    return yaml.safe_dump(content)

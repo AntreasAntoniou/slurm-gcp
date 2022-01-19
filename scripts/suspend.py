@@ -26,13 +26,12 @@ from itertools import groupby
 from pathlib import Path
 
 import googleapiclient.discovery
-
 import util
 
-cfg = util.Config.load_config(Path(__file__).with_name('config.yaml'))
+cfg = util.Config.load_config(Path(__file__).with_name("config.yaml"))
 
-SCONTROL = Path(cfg.slurm_cmd_path or '')/'scontrol'
-LOGFILE = (Path(cfg.log_dir or '')/Path(__file__).name).with_suffix('.log')
+SCONTROL = Path(cfg.slurm_cmd_path or "") / "scontrol"
+LOGFILE = (Path(cfg.log_dir or "") / Path(__file__).name).with_suffix(".log")
 
 TOT_REQ_CNT = 1000
 
@@ -40,16 +39,20 @@ operations = {}
 retry_list = []
 
 if cfg.google_app_cred_path:
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cfg.google_app_cred_path
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = cfg.google_app_cred_path
 
 
 def delete_instances_cb(request_id, response, exception):
     if exception is not None:
         log.error(f"delete exception for node {request_id}: {exception}")
-        if "Rate Limit Exceeded" in str(exception) or "Quota exceeded" in str(exception):
+        if "Rate Limit Exceeded" in str(exception) or "Quota exceeded" in str(
+            exception
+        ):
             retry_list.append(request_id)
     else:
         operations[request_id] = response
+
+
 # [END delete_instances_cb]
 
 
@@ -59,18 +62,18 @@ def delete_instances(compute, node_list, arg_job_id):
     curr_batch = 0
     req_cnt = 0
     batch_list.insert(
-        curr_batch,
-        compute.new_batch_http_request(callback=delete_instances_cb))
+        curr_batch, compute.new_batch_http_request(callback=delete_instances_cb)
+    )
 
-    def_list = {pid: cfg.instance_defs[pid]
-                for pid, nodes in groupby(node_list, util.get_pid)}
-    regional_instances = util.get_regional_instances(compute, cfg.project,
-                                                     def_list)
+    def_list = {
+        pid: cfg.instance_defs[pid] for pid, nodes in groupby(node_list, util.get_pid)
+    }
+    regional_instances = util.get_regional_instances(compute, cfg.project, def_list)
 
     for node_name in node_list:
 
         pid = util.get_pid(node_name)
-        if (not arg_job_id and cfg.instance_defs[pid].exclusive):
+        if not arg_job_id and cfg.instance_defs[pid].exclusive:
             # Node was deleted by EpilogSlurmctld, skip for SuspendProgram
             continue
 
@@ -80,7 +83,7 @@ def delete_instances(compute, node_list, arg_job_id):
             if instance is None:
                 log.debug("Regional node not found. Already deleted?")
                 continue
-            zone = instance['zone'].split('/')[-1]
+            zone = instance["zone"].split("/")[-1]
         else:
             zone = cfg.instance_defs[pid].zone
 
@@ -88,14 +91,15 @@ def delete_instances(compute, node_list, arg_job_id):
             req_cnt = 0
             curr_batch += 1
             batch_list.insert(
-                curr_batch,
-                compute.new_batch_http_request(callback=delete_instances_cb))
+                curr_batch, compute.new_batch_http_request(callback=delete_instances_cb)
+            )
 
         batch_list[curr_batch].add(
-            compute.instances().delete(project=cfg.project,
-                                       zone=zone,
-                                       instance=node_name),
-            request_id=node_name)
+            compute.instances().delete(
+                project=cfg.project, zone=zone, instance=node_name
+            ),
+            request_id=node_name,
+        )
         req_cnt += 1
 
     try:
@@ -105,6 +109,7 @@ def delete_instances(compute, node_list, arg_job_id):
                 time.sleep(30)
     except Exception:
         log.exception("error in batch:")
+
 
 # [END delete_instances]
 
@@ -119,33 +124,43 @@ def delete_placement_groups(compute, node_list, arg_job_id):
         if i % PLACEMENT_MAX_CNT:
             continue
         pg_index += 1
-        pg_name = f'{cfg.cluster_name}-{arg_job_id}-{pg_index}'
-        pg_ops.append(compute.resourcePolicies().delete(
-            project=cfg.project, region=cfg.instance_defs[pid].region,
-            resourcePolicy=pg_name).execute())
+        pg_name = f"{cfg.cluster_name}-{arg_job_id}-{pg_index}"
+        pg_ops.append(
+            compute.resourcePolicies()
+            .delete(
+                project=cfg.project,
+                region=cfg.instance_defs[pid].region,
+                resourcePolicy=pg_name,
+            )
+            .execute()
+        )
     for operation in pg_ops:
         util.wait_for_operation(compute, cfg.project, operation)
     log.debug("done deleting pg")
+
+
 # [END delete_placement_groups]
 
 
 def main(arg_nodes, arg_job_id):
     log.debug(f"deleting nodes:{arg_nodes} job_id:{job_id}")
-    compute = googleapiclient.discovery.build('compute', 'v1',
-                                              cache_discovery=False)
+    compute = googleapiclient.discovery.build("compute", "v1", cache_discovery=False)
 
     # Get node list
-    nodes_str = util.run(f"{SCONTROL} show hostnames {arg_nodes}",
-                         check=True, get_stdout=True).stdout
+    nodes_str = util.run(
+        f"{SCONTROL} show hostnames {arg_nodes}", check=True, get_stdout=True
+    ).stdout
     node_list = nodes_str.splitlines()
 
     # Get static node list
     exc_nodes_hostlist = util.run(
-        f"{SCONTROL} show config | "
-        "awk '/SuspendExcNodes.*=/{print $3}'", shell=True,
-        get_stdout=True).stdout
-    nodes_exc_str = util.run(f"{SCONTROL} show hostnames {exc_nodes_hostlist}",
-                             check=True, get_stdout=True).stdout
+        f"{SCONTROL} show config | " "awk '/SuspendExcNodes.*=/{print $3}'",
+        shell=True,
+        get_stdout=True,
+    ).stdout
+    nodes_exc_str = util.run(
+        f"{SCONTROL} show hostnames {exc_nodes_hostlist}", check=True, get_stdout=True
+    ).stdout
     node_exc_list = sorted(nodes_exc_str.splitlines(), key=util.get_pid)
 
     # Generate new arg_nodes without static nodes
@@ -158,7 +173,7 @@ def main(arg_nodes, arg_job_id):
         return
 
     pid = util.get_pid(node_list[0])
-    if (arg_job_id and not cfg.instance_defs[pid].exclusive):
+    if arg_job_id and not cfg.instance_defs[pid].exclusive:
         # Don't delete from calls by EpilogSlurmctld
         return
 
@@ -168,16 +183,16 @@ def main(arg_nodes, arg_job_id):
         # "powering_up" flag would get stuck on the node. In 20.11 and prior:
         # state=down followed by state=power_down could clear it. In 21.08,
         # state=power_down_force can clear it.
-        util.run(
-            f"{SCONTROL} update node={arg_nodes} state=power_down_force")
+        util.run(f"{SCONTROL} update node={arg_nodes} state=power_down_force")
 
     while True:
         delete_instances(compute, node_list, arg_job_id)
         if not len(retry_list):
             break
 
-        log.debug("got {} nodes to retry ({})"
-                  .format(len(retry_list), ','.join(retry_list)))
+        log.debug(
+            "got {} nodes to retry ({})".format(len(retry_list), ",".join(retry_list))
+        )
         node_list = list(retry_list)
         del retry_list[:]
 
@@ -192,29 +207,38 @@ def main(arg_nodes, arg_job_id):
 
     log.debug("done deleting instances")
 
-    if (arg_job_id and
-            cfg.instance_defs[pid].enable_placement and
-            cfg.instance_defs[pid].machine_type.split('-')[0] == "c2" and
-            len(node_list) > 1):
+    if (
+        arg_job_id
+        and cfg.instance_defs[pid].enable_placement
+        and cfg.instance_defs[pid].machine_type.split("-")[0] == "c2"
+        and len(node_list) > 1
+    ):
         delete_placement_groups(compute, node_list, arg_job_id)
 
     log.info(f"done deleting nodes:{arg_nodes} job_id:{job_id}")
 
+
 # [END main]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('args', nargs='+', help="nodes [jobid]")
-    parser.add_argument('--debug', '-d', dest='debug', action='store_true',
-                        help='Enable debugging output')
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("args", nargs="+", help="nodes [jobid]")
+    parser.add_argument(
+        "--debug",
+        "-d",
+        dest="debug",
+        action="store_true",
+        help="Enable debugging output",
+    )
 
     if "SLURM_JOB_NODELIST" in os.environ:
-        args = parser.parse_args(sys.argv[1:] +
-                                 [os.environ['SLURM_JOB_NODELIST'],
-                                  os.environ['SLURM_JOB_ID']])
+        args = parser.parse_args(
+            sys.argv[1:]
+            + [os.environ["SLURM_JOB_NODELIST"], os.environ["SLURM_JOB_ID"]]
+        )
     else:
         args = parser.parse_args()
 
@@ -224,11 +248,9 @@ if __name__ == '__main__':
         job_id = args.args[1]
 
     if args.debug:
-        util.config_root_logger(level='DEBUG', util_level='DEBUG',
-                                logfile=LOGFILE)
+        util.config_root_logger(level="DEBUG", util_level="DEBUG", logfile=LOGFILE)
     else:
-        util.config_root_logger(level='INFO', util_level='ERROR',
-                                logfile=LOGFILE)
+        util.config_root_logger(level="INFO", util_level="ERROR", logfile=LOGFILE)
     log = logging.getLogger(Path(__file__).name)
     sys.excepthook = util.handle_exception
 
