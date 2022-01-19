@@ -131,10 +131,13 @@ partitions = [
     instance_template            = "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node"
 
 
-#    compute_startup_script = <<-EOT
-#    #!/bin/bash
-#    echo startup script in the tfvars > custom-compute-ran-var.txt
-#    EOT
+    compute_startup_script = <<-EOT
+    #!/bin/bash
+    git clone https://github.com/AntreasAntoniou/slurm-gcp.git
+    cd slurm-gcp/
+    bash tali_setup_scripts/setup_base_experiment_disk.sh
+    bash tali_setup_scripts/setup_tali_dataset_disk.sh
+    EOT
 
     # With regional_capacity : true, the region can be specified in the zone.
     # Otherwise the region will be inferred from the zone.
