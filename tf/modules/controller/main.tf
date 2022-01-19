@@ -52,7 +52,7 @@ resource "google_compute_disk" "secondary" {
   zone = var.zone
 }
 
-data "google_compute_default_service_account" "tali-multi-modal" {}
+data "google_compute_default_service_account" "default" {}
 
 resource "google_compute_instance" "controller_node" {
   count = var.instance_template == null ? 1 : 0

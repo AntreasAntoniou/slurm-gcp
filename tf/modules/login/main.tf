@@ -19,7 +19,7 @@ locals {
   custom-compute-install = var.login_startup_script != null? var.login_startup_script : file("${path.module}/../../../scripts/custom-compute-install")
 }
 
-data "google_compute_default_service_account" "tali-multi-modal" {}
+data "google_compute_default_service_account" "default" {}
 
 resource "google_compute_instance" "login_node" {
   count = var.instance_template == null ? var.node_count : 0
