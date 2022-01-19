@@ -17,7 +17,7 @@ controller_machine_type = "n1-standard-4"
 controller_image        = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-hpc-centos-7"
 controller_disk_type    = "pd-standard"
 controller_disk_size_gb = 100
-controller_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
+#controller_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
 
 # controller_labels = {
 #   key1 = "val1"
@@ -48,7 +48,7 @@ login_machine_type = "n1-standard-2"
 login_image        = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-hpc-centos-7"
 login_disk_type    = "pd-standard"
 login_disk_size_gb = 20
-login_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
+#login_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
 
 # login_labels = {
 #   key1 = "val1"
