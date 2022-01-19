@@ -104,7 +104,7 @@ partitions = [
 
   { name                 = "worker-small"
     machine_type         = "a2-highgpu-1g"
-    static_node_count    = 0
+    static_node_count    = 4
     max_node_count       = 20
     zone                 = "us-central1-f"
     image                = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-debian-10"
