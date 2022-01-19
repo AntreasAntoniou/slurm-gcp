@@ -187,6 +187,7 @@ def create_instance(compute, instance_def, node_list, placement_group_name):
         "instanceProperties": config,
         "perInstanceProperties": perInstanceProperties,
     }
+    logging.info(config)
 
     if instance_def.instance_template:
         body[
