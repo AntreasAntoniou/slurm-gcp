@@ -104,8 +104,8 @@ resource "google_compute_instance" "compute_node" {
   }
 
   service_account {
-    email  = each.value.sa_email
-    scopes = each.value.sa_scopes
+    email  = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
+    scopes = []
   }
 
   metadata_startup_script = file("${path.module}/../../../scripts/startup.sh")
@@ -190,8 +190,8 @@ resource "google_compute_instance_from_template" "compute_node" {
   }
 
   service_account {
-    email  = each.value.sa_email
-    scopes = each.value.sa_scopes
+    email  = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
+    scopes = []
   }
 
   metadata_startup_script = file("${path.module}/../../../scripts/startup.sh")

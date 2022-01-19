@@ -104,7 +104,7 @@ partitions = [
 
   { name                 = "worker-small"
     machine_type         = "a2-highgpu-1g"
-    static_node_count    = 1
+    static_node_count    = 0
     max_node_count       = 20
     zone                 = "us-central1-f"
     image                = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-debian-10"
@@ -124,40 +124,38 @@ partitions = [
     enable_placement     = false
 
     compute_node_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
-    compute_node_scopes          = [
-     "https://www.googleapis.com/auth/cloud-platform"
-    ]
+    compute_node_scopes          = []
 
     instance_template            = "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node-v-1-1"
 
 
-    compute_startup_script = <<-EOT
-    #!/bin/bash
-    export MOUNT_DIR="/mnt/disk/filestore/"
-    export EXPERIMENTS_DIR="/mnt/disk/filestore/experiments/"
-
-    if [ ! -d "$MOUNT_DIR" ]; then
-      sudo mkdir -p $MOUNT_DIR
-      sudo chmod -Rv 777 $MOUNT_DIR
-    fi
-
-    if [ ! -d "$EXPERIMENTS_DIR" ]; then
-      sudo mkdir -p $EXPERIMENTS_DIR
-      sudo chmod -Rv 777 $EXPERIMENTS_DIR
-    fi
-    ########################################################################################
-    export DATASET_DIR="/mnt/disk/filestore/tali-dataset/"
-
-    if [ ! -d "$DATASET_DIR" ]; then
-      sudo mkdir -p $DATASET_DIR
-      sudo chmod -Rv 777 $DATASET_DIR
-    fi
-
-    sudo mount -o discard,defaults /dev/sdb $DATASET_DIR
-
-    #sudo chmod -Rv 777 $DATASET_DIR
-    ########################################################################################
-    EOT
+#    compute_startup_script = <<-EOT
+#    #!/bin/bash
+#    export MOUNT_DIR="/mnt/disk/filestore/"
+#    export EXPERIMENTS_DIR="/mnt/disk/filestore/experiments/"
+#
+#    if [ ! -d "$MOUNT_DIR" ]; then
+#      sudo mkdir -p $MOUNT_DIR
+#      sudo chmod -Rv 777 $MOUNT_DIR
+#    fi
+#
+#    if [ ! -d "$EXPERIMENTS_DIR" ]; then
+#      sudo mkdir -p $EXPERIMENTS_DIR
+#      sudo chmod -Rv 777 $EXPERIMENTS_DIR
+#    fi
+#    ########################################################################################
+#    export DATASET_DIR="/mnt/disk/filestore/tali-dataset/"
+#
+#    if [ ! -d "$DATASET_DIR" ]; then
+#      sudo mkdir -p $DATASET_DIR
+#      sudo chmod -Rv 777 $DATASET_DIR
+#    fi
+#
+#    sudo mount -o discard,defaults /dev/sdb $DATASET_DIR
+#
+#    #sudo chmod -Rv 777 $DATASET_DIR
+#    ########################################################################################
+#    EOT
 
     # With regional_capacity : true, the region can be specified in the zone.
     # Otherwise the region will be inferred from the zone.
