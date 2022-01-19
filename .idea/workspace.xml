@@ -1,9 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2d456d9d-7b41-4c42-b16a-8fe54223d0b6" name="Changes" comment="">
+    <list default="true" id="2d456d9d-7b41-4c42-b16a-8fe54223d0b6" name="Changes" comment="Clean and add improvements for pre-emptible usage.">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CONTRIBUTING.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MP_README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/NEWS" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/c2d_deployment_configuration.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/common/common.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/common/default.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/common/password.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/common/path_utils.jinja" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/common/software_status.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/common/software_status.py.schema" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/common/software_status.sh.tmpl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/common/software_status_script.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/common/software_status_script.py.schema" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/common/vm_instance.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/common/vm_instance.py.schema" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/etc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/resources/en-us/Slurm_workload_manager.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/resources/en-us/slurm-logo-only-small.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/schedmd-slurm-cluster.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/schedmd-slurm-gcp.jinja" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/schedmd-slurm-gcp.jinja.display" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/schedmd-slurm-gcp.jinja.schema" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/scripts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/slurm-cluster.jinja" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/slurm-cluster.jinja.schema" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/slurm-cluster.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dm/test_config.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/Pipfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/Pipfile.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/custom.d/custom-example.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/etc/fluentd.conf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/foundry.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/images.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/intel-image/images-intel-select-solution.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/intel-image/slurm-intel-select-solution.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/intel-image/slurm-intel-select-solution.py.schema" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/scripts/centos-7-packages" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/scripts/centos-8-packages" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/scripts/debian-10-packages" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/scripts/hpc-intel-compute-packages" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/scripts/hpc-intel-controller-packages" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/scripts/setup-intel-select-solution.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/scripts/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/scripts/startup-intel-select-solution.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/scripts/startup.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/scripts/ubuntu-2004-packages" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/scripts/util.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/slurm-template.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foundry/slurm-template.py.schema" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen3-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen5-1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen5-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/market-screen9.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/resume.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/resume.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/setup.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tf/examples/basic/basic.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/tf/examples/basic/basic.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tf/examples/singularity/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tf/examples/singularity/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tf/examples/singularity/basic.tfvars.example" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tf/examples/singularity/custom-controller-install" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tf/examples/singularity/io.tf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tf/examples/singularity/main.tf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tf/examples/singularity/versions.tf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tf/modules/compute/main.tf" beforeDir="false" afterPath="$PROJECT_DIR$/tf/modules/compute/main.tf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +118,7 @@
       <option name="presentableId" value="Default" />
       <updated>1642557467583</updated>
       <workItem from="1642557469436" duration="701000" />
-      <workItem from="1642559226914" duration="5353000" />
+      <workItem from="1642559226914" duration="7627000" />
     </task>
     <task id="LOCAL-00001" summary="Clean and add improvements for pre-emptible usage.">
       <created>1642559637135</created>
@@ -137,7 +211,14 @@
       <option name="project" value="LOCAL" />
       <updated>1642565091072</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Clean and add improvements for pre-emptible usage.">
+      <created>1642565176861</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1642565176861</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

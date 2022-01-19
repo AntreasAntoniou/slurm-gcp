@@ -186,7 +186,8 @@ def expand_instance_templates():
         ):
             template_resp = util.ensure_execute(
                 compute.instanceTemplates().get(
-                    project=cfg.project, instanceTemplate=instance_def.instance_template
+                    project=cfg.project,
+                    instanceTemplate=instance_def.instance_template
                 )
             )
             if template_resp:

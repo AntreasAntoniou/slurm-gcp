@@ -134,7 +134,7 @@ partitions = [
      "https://www.googleapis.com/auth/cloud-platform"
     ]
 
-    instance_template            = null # "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node"
+    instance_template            = "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node"
 
 
 #    compute_startup_script = <<-EOT

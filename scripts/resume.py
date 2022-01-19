@@ -174,13 +174,15 @@ def create_instance(compute, instance_def, node_list, placement_group_name):
             }
         ]
         config["scheduling"] = {
-            "provisioningModel": True,
+            "preemptible": True,
+            "provisioningModel": "SPOT",
             "onHostMaintenance": "TERMINATE",
             "automaticRestart": False,
         }
 
     if instance_def.preemptible_bursting.lower() == "spot":
         config["scheduling"] = {
+            "preemptible": True,
             "provisioningModel": "SPOT",
             "onHostMaintenance": "TERMINATE",
             "automaticRestart": False,
@@ -188,6 +190,7 @@ def create_instance(compute, instance_def, node_list, placement_group_name):
     elif instance_def.preemptible_bursting.lower() != "false":
         config["scheduling"] = {
             "preemptible": True,
+            "provisioningModel": "SPOT",
             "onHostMaintenance": "TERMINATE",
             "automaticRestart": False,
         }

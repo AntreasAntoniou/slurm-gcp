@@ -97,6 +97,9 @@ resource "google_compute_instance" "compute_node" {
     for_each = each.value.gpu_count > 0 ? [1] : [0]
     content {
       on_host_maintenance = "TERMINATE"
+      preemptible = True
+#      provisioningModel = "SPOT"
+      automaticRestart = False
     }
   }
 
@@ -180,6 +183,9 @@ resource "google_compute_instance_from_template" "compute_node" {
     for_each = each.value.gpu_count > 0 ? [1] : [0]
     content {
       on_host_maintenance = "TERMINATE"
+      preemptible = True
+#      provisioningModel = "SPOT"
+      automaticRestart = False
     }
   }
 

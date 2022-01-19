@@ -5,3 +5,4 @@ __pycache__
 **/*.tfplan
 **/*.tfvars
 .terraform.lock.hcl
+.idea/**
