@@ -18,7 +18,7 @@ controller_image        = "projects/schedmd-slurm-public/global/images/family/sc
 controller_disk_type    = "pd-standard"
 controller_disk_size_gb = 100
 controller_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
-   
+
 # controller_labels = {
 #   key1 = "val1"
 #   key2 = "val2"
