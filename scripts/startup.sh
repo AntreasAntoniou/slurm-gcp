@@ -42,3 +42,30 @@ fi
 echo "running python cluster setup script"
 chmod +x $DIR/$SETUP_SCRIPT
 $DIR/$SETUP_SCRIPT
+
+########################################################################################
+
+export MOUNT_DIR="/mnt/disk/filestore/"
+export EXPERIMENTS_DIR="/mnt/disk/filestore/experiments/"
+
+if [ ! -d "$MOUNT_DIR" ]; then
+  sudo mkdir -p $MOUNT_DIR
+  sudo chmod -Rv 777 $MOUNT_DIR
+fi
+
+if [ ! -d "$EXPERIMENTS_DIR" ]; then
+  sudo mkdir -p $EXPERIMENTS_DIR
+  sudo chmod -Rv 777 $EXPERIMENTS_DIR
+fi
+########################################################################################
+
+export DATASET_DIR="/mnt/disk/filestore/tali-dataset/"
+
+if [ ! -d "$DATASET_DIR" ]; then
+  sudo mkdir -p $DATASET_DIR
+  sudo chmod -Rv 777 $DATASET_DIR
+fi
+
+sudo mount -o discard,defaults /dev/sdb $DATASET_DIR
+
+########################################################################################
