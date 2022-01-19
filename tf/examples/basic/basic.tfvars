@@ -133,10 +133,30 @@ partitions = [
 
     compute_startup_script = <<-EOT
     #!/bin/bash
-    git clone https://github.com/AntreasAntoniou/slurm-gcp.git
-    cd slurm-gcp/
-    bash tali_setup_scripts/setup_base_experiment_disk.sh
-    bash tali_setup_scripts/setup_tali_dataset_disk.sh
+    export MOUNT_DIR="/mnt/disk/filestore/"
+    export EXPERIMENTS_DIR="/mnt/disk/filestore/experiments/"
+
+    if [ ! -d "$MOUNT_DIR" ]; then
+      sudo mkdir -p $MOUNT_DIR
+      sudo chmod -Rv 777 $MOUNT_DIR
+    fi
+
+    if [ ! -d "$EXPERIMENTS_DIR" ]; then
+      sudo mkdir -p $EXPERIMENTS_DIR
+      sudo chmod -Rv 777 $EXPERIMENTS_DIR
+    fi
+    ########################################################################################
+    export DATASET_DIR="/mnt/disk/filestore/tali-dataset/"
+
+    if [ ! -d "$DATASET_DIR" ]; then
+      sudo mkdir -p $DATASET_DIR
+      sudo chmod -Rv 777 $DATASET_DIR
+    fi
+
+    sudo mount -o discard,defaults /dev/sdb $DATASET_DIR
+
+    #sudo chmod -Rv 777 $DATASET_DIR
+    ########################################################################################
     EOT
 
     # With regional_capacity : true, the region can be specified in the zone.
