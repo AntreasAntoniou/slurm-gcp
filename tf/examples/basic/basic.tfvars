@@ -124,7 +124,7 @@ partitions = [
       fs_type       = "gcsfuse"
       mount_options = "file_mode=664,dir_mode=775,allow_other"
     }]
-    preemptible_bursting = "true"
+    preemptible_bursting = "spot"
     vpc_subnet           = null
     exclusive            = false
     enable_placement     = false
