@@ -14,7 +14,7 @@ zone         = "us-central1-f"
 # complete_wait_time = 0
 
 controller_machine_type = "n1-standard-4"
-controller_image        = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-debian-10"
+controller_image        = "projects/tali-multi-modal/global/images/tali-cluster-controller-v-1-0"
 controller_disk_type    = "pd-standard"
 controller_disk_size_gb = 100
 #controller_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
