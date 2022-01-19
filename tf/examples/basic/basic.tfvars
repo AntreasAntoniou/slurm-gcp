@@ -122,11 +122,7 @@ partitions = [
     vpc_subnet           = null
     exclusive            = false
     enable_placement     = false
-
-    compute_node_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
-    compute_node_scopes          = null
-
-    instance_template            = "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node"
+    instance_template    = "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node"
 
 
 #    compute_startup_script = <<-EOT
