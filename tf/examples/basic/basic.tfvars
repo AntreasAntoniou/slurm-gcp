@@ -109,7 +109,7 @@ partitions = [
     zone                 = "us-central1-f"
     image                = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-debian-10"
     image_hyperthreads   = true
-    cpu_platform         = "Intel Skylake"
+    cpu_platform         = null
     compute_disk_type    = "pd-standard"
     compute_disk_size_gb = 350
     compute_labels       = {}
@@ -122,13 +122,9 @@ partitions = [
     vpc_subnet           = null
     exclusive            = false
     enable_placement     = false
-
-    compute_node_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
-    compute_node_scopes          = [
-     "https://www.googleapis.com/auth/cloud-platform"
-    ]
-
-    instance_template            = "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node"
+    regional_capacity    = false
+    regional_policy      = {}
+    instance_template    = "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node"
 
 
 #    compute_startup_script = <<-EOT
