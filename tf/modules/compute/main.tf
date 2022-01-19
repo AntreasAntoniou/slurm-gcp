@@ -98,7 +98,7 @@ resource "google_compute_instance" "compute_node" {
     content {
       on_host_maintenance = "TERMINATE"
       preemptible = true
-      provisioning-model = "SPOT"
+#      provisioning_model = "SPOT"
       automatic_restart = false
     }
   }
@@ -184,7 +184,7 @@ resource "google_compute_instance_from_template" "compute_node" {
     content {
       on_host_maintenance = "TERMINATE"
       preemptible = true
-      provisioning-model = "SPOT"
+#      provisioning_model = "SPOT"
       automatic_restart = false
     }
   }
