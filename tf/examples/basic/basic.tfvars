@@ -1,4 +1,4 @@
-cluster_name = "tali-cluster-dev"
+cluster_name = "tali-cluster"
 project      = "tali-multi-modal"
 zone         = "us-central1-f"
 
@@ -104,7 +104,7 @@ partitions = [
 
   { name                 = "worker-small"
     machine_type         = "a2-highgpu-1g"
-    static_node_count    = 1
+    static_node_count    = 0
     max_node_count       = 20
     zone                 = "us-central1-f"
     image                = "projects/schedmd-slurm-public/global/images/family/schedmd-slurm-21-08-4-debian-10"
@@ -124,7 +124,9 @@ partitions = [
     enable_placement     = false
 
     compute_node_service_account = "tali-multi-modal@tali-multi-modal.iam.gserviceaccount.com"
-    compute_node_scopes          = []
+    compute_node_scopes          = [
+     "https://www.googleapis.com/auth/cloud-platform"
+    ]
 
     instance_template            = "projects/tali-multi-modal/global/instanceTemplates/gpu-small-node-v-1-1"
 
