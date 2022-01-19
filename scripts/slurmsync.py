@@ -28,7 +28,7 @@ import googleapiclient.discovery
 import util
 
 cfg = util.Config.load_config(Path(__file__).with_name("config.yaml"))
-
+print(cfg)
 SCONTROL = Path(cfg.slurm_cmd_path or "") / "scontrol"
 LOGFILE = (Path(cfg.log_dir or "") / Path(__file__).name).with_suffix(".log")
 SCRIPTS_DIR = Path(__file__).parent.resolve()
