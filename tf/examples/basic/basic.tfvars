@@ -1,4 +1,4 @@
-cluster_name = "tali-cluster"
+cluster_name = "tali-cluster-dev"
 project      = "tali-multi-modal"
 zone         = "us-central1-f"
 
